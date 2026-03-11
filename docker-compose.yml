@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+
+  recommender:
+    build: .
+    container_name: airec
+    volumes:
+      - .:/app
+    command: python examples/train_from_csv.py
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: recommendation
+    ports:
+      - "3306:3306"

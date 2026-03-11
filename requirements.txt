@@ -1,5 +1,4 @@
-fastapi
-scikit-learn
+
 numpy
 pandas
-uvicorn
+mysql-connector-python
