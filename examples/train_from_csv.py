@@ -1,16 +1,28 @@
-
-from airec import Trainer
-from airec.algorithms.content_based import ContentBased
+import os
+import pickle
+import pandas as pd
 from airec.data_sources.csv_source import CSVSource
+from airec.algorithms.content_based import ContentBased
 
-source = CSVSource("books.csv")
+base_dir = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(base_dir, "Books.csv")
 
-trainer = Trainer(ContentBased())
+data_source = CSVSource(csv_path)
+df = data_source.load_items()
 
-model = trainer.train(
-    source,
-    id_col="item_id",
-    text_col="content"
-)
+df = df.head(1000)  # remove this limit after fixing sparse matrix
 
-trainer.save_model(model, "book_model.pkl")
+df = df.rename(columns={
+    "ISBN":        "item_id",
+    "Book-Author": "content",
+})
+
+algorithm = ContentBased()
+model = algorithm.fit(df)
+
+# ── Save model to pkl ──────────────────────────────────────────────────────
+pkl_path = os.path.join(base_dir, "model.pkl")
+with open(pkl_path, "wb") as f:
+    pickle.dump(algorithm, f)
+
+print(f"✅ Model trained and saved to {pkl_path}")
